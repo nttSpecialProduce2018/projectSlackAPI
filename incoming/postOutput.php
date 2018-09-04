@@ -1,25 +1,26 @@
 <?php
 $num = $_POST["numnum"];
 
-$webhook_url = 'https://hooks.slack.com/services/XXXXXXXXXX';
+function send_to_slack($message) {
+  $webhook_url = 'https://hooks.slack.com/services/XXXXXXXXXXXXXXXXXXXXX';
+  $options = array(
+    'http' => array(
+      'method' => 'POST',
+      'header' => 'Content-Type: application/json',
+      'content' => json_encode($message),
+    )
+  );
+  $response = file_get_contents($webhook_url, false, stream_context_create($options));
+  return $response === 'ok';
+}
 
-$msg = array(
-    'username' => 'phpPost',
-    'text' => $num
+$message = array(
+  'username' => 'bot',
+  'text' => $num,
 );
-$msg = json_encode($msg);
-$msg = 'payload=' . urlencode($msg);
 
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $webhook_url);
-curl_setopt($ch, CURLOPT_HEADER, false);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, $msg);
-curl_exec($ch);
-curl_close($ch);
+send_to_slack($message);
 
 echo ('送信したで');
 
-
-//【参考】http://docs.hatenablog.jp/entry/slack-Incoming-webhooks
+//【参考】https://qiita.com/hoto17296/items/621a6e16f23785a543f3
